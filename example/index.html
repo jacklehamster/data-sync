@@ -1,16 +1,76 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en-US">
   <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Bun Template</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Data Sync</title>
   </head>
   <body>
-  </body>
-  <script type="module">
-    import { Hello } from './dist/index.js';
+    <h1>WebSocket Test</h1>
+    <button id="sendMessage">Send Message</button>
+    <div
+      id="cursor"
+      style="
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: red;
+      "
+    ></div>
+    <script>
+      let socket = new WebSocket(`ws://${location.host}`);
+      const id = Math.random().toString(36).substr(2, 9);
 
-    const h1 = document.body.appendChild(document.createElement("h1"));
-    h1.textContent = Hello.hello();
-  </script>
+      function initializeSocket(socket) {
+        socket.addEventListener("open", (event) => {
+          console.log("Connected to WebSocket server");
+        });
+
+        socket.addEventListener("message", (event) => {
+          console.log("Message from server:", event.data);
+          const data = JSON.parse(event.data);
+          data.forEach((data) => {
+            if (data.type === "mousemove" && data.id !== id) {
+              document.getElementById("cursor").style.left = `${data.x}px`;
+              document.getElementById("cursor").style.top = `${data.y}px`;
+            }
+          });
+        });
+
+        socket.addEventListener("close", (event) => {
+          console.log("Disconnected from WebSocket server");
+        });
+      }
+      initializeSocket(socket);
+
+      document.addEventListener("mousemove", (event) => {
+        socket.send(
+          JSON.stringify({
+            type: "mousemove",
+            id,
+            x: event.clientX,
+            y: event.clientY,
+          })
+        );
+      });
+
+      document
+        .getElementById("sendMessage")
+        .addEventListener("click", async () => {
+          if (socket.readyState !== WebSocket.OPEN) {
+            socket = new WebSocket(`ws://${location.host}`);
+            await new Promise((resolve) =>
+              socket.addEventListener("open", resolve, { once: true })
+            );
+            initializeSocket(socket);
+          }
+          socket.send(
+            JSON.stringify({
+              clicked: true,
+            })
+          );
+          console.log("Sent message");
+        });
+    </script>
+  </body>
 </html>

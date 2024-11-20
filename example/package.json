@@ -8,14 +8,17 @@
     "build-icon": "icon-gen -i ../icon.png -o ."
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "baojs": "^0.2.1",
     "bun-types": "^1.1.13",
+    "express": "^4.21.1",
     "icon-gen": "^4.0.0",
     "png-to-ico": "^2.1.8",
-    "serve-static-bun": "^0.5.3"
+    "serve-static-bun": "^0.5.3",
+    "ws": "^8.18.0"
   },
   "peerDependencies": {
     "typescript": "^5.0.0",
-    "bun-template": "link:bun-template"
+    "data-sync": "link:data-sync"
   }
 }

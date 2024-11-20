@@ -1,9 +1,4 @@
-export class Hello {
-  static hello() {
-    return "Hello World!";
-  }
-}
+import { SyncSocket } from "./hookup/sync-socket";
 
-export function HelloComponent() {
-  return <>Hello</>
-}
+
+export { SyncSocket }
